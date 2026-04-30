@@ -1,0 +1,101 @@
+openapi: 3.1.0
+info:
+  title: EMIAS Common schemas - System
+  version: 0.0.1
+  description: Описание общих системных типов ЕМИАС для REST API
+
+components:
+  schemas:
+    # ===== system (базовые типы) =====
+    ID:
+      type: integer
+      format: int64
+      description: "Идентификатор"
+
+    GUID:
+      type: string
+      description: "Глобальный 128-битный идентификатор (GUID)"
+      pattern: "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+
+    KeyValuePair:
+      type: object
+      description: "Представляет тип \"ключ/значение\""
+      properties:
+        value:
+          type: string
+          description: "Значение"
+        key:
+          type: string
+          description: "Ключ"
+      required:
+        - key
+      additionalProperties: true
+
+    Mail:
+      type: string
+      description: "Адрес электронной почты"
+      maxLength: 320
+      pattern: ".+@.+\\..+"
+
+    Message:
+      type: object
+      description: "Сообщение"
+      properties:
+        code:
+          type: string
+          description: "Код сообщения"
+        message:
+          type: string
+          description: "Текст сообщения"
+      required:
+        - code
+        - message
+      additionalProperties: true
+
+    ErrorMessageCollection:
+      type: object
+      description: "Коллекция сообщений об ошибках"
+      properties:
+        message:
+          type: array
+          description: "Сообщение об ошибке"
+          items:
+            $ref: '#/components/schemas/ErrorMessage'
+      required:
+        - message
+
+    ErrorMessage:
+      allOf:
+        - $ref: '#/components/schemas/Message'
+        - type: object
+          properties:
+            parameters:
+              type: object
+              description: "Коллекция параметров сообщения"
+              properties:
+                parameter:
+                  type: array
+                  description: "Параметр сообщения"
+                  items:
+                    $ref: '#/components/schemas/KeyValuePair'
+              required:
+                - parameter
+              additionalProperties: true
+            messages:
+              $ref: '#/components/schemas/ErrorMessageCollection'
+              description: "Сопутствующие сообщения об ошибках"
+            type:
+              $ref: '#/components/schemas/ErrorMessageTypes'
+              description: "Тип сообщения"
+          required:
+            - type
+          additionalProperties: true
+      description: "Сообщение об ошибке"
+
+    ErrorMessageTypes:
+      type: string
+      description: "Тип сообщения об ошибке"
+      enum:
+        - ERROR
+        - WARNING
+        - INFO
