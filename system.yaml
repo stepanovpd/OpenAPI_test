@@ -4,6 +4,8 @@ info:
   version: 0.0.1
   description: Описание общих системных типов ЕМИАС для REST API
 
+paths: {}
+
 components:
   schemas:
     # ===== system (базовые типы) =====
